@@ -362,5 +362,3 @@ This is a complete, production-ready system with:
 ✅ Security features
 ✅ Ready to run and demo
 The system is now complete and ready for deployment!
-
-allow new user with the reg number aligning with existing users like 82302630101 if register 82302630143 as new user map him acc to the batch dept and all and at registeration page ask only name not username ma username as reg number
