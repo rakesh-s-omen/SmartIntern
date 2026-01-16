@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartIntern - Internship Management Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --oxford-blue: #002147;
+            --red-crayola: #EE4B6A;
+            --naples-yellow: #FADA5E;
+            --mint-cream: #F5FFFA;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-900: #111827;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            overflow-x: hidden;
+            color: var(--gray-900);
+        }
+        
+        /* Modern Navbar */
+        .navbar {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .navbar.scrolled {
+            padding: 12px 0;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--oxford-blue) !important;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .navbar-brand .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--oxford-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        .nav-link {
+            color: var(--gray-600) !important;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 8px 20px !important;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--oxford-blue) !important;
+        }
+        
+        .btn-nav-login {
+            background: transparent;
+            border: none;
+            color: var(--gray-600);
+            padding: 10px 24px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-nav-login:hover {
+            color: var(--oxford-blue);
+        }
+        
+        .btn-nav-register {
+            background: var(--oxford-blue);
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-nav-register:hover {
+            background: #001a38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,33,71,0.25);
+            color: white;
+        }
+        
+        /* Hero Section - Ultra Modern */
+        .hero-section {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 140px 0 100px;
+            overflow: hidden;
+        }
+        
+        .hero-grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0,33,71,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,33,71,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 70%, transparent 100%);
+        }
+        
+        .hero-glow {
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 60%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(238,75,106,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .hero-glow-2 {
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(250,218,94,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            padding: 6px 16px;
+            border-radius: 100px;
+            margin-bottom: 28px;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+        
+        .hero-eyebrow .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--red-crayola);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            color: var(--gray-900);
+            line-height: 1.05;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+        }
+        
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--red-crayola) 0%, var(--oxford-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-500);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 520px;
+            font-weight: 400;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 64px;
+        }
+        
+        .btn-primary-modern {
+            background: var(--oxford-blue);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+        }
+        
+        .btn-primary-modern:hover {
+            background: #001a38;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,33,71,0.2);
+            color: white;
+        }
+        
+        .btn-secondary-modern {
+            background: var(--white);
+            color: var(--gray-900);
+            border: 1px solid var(--gray-200);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+        }
+        
+        .btn-secondary-modern:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+            color: var(--gray-900);
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+        }
+        
+        .stat-item {
+            text-align: left;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        
+        .stat-label {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        
+        /* Floating Dashboard Preview */
+        .hero-visual {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dashboard-preview {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 
+                0 0 0 1px rgba(0,0,0,0.03),
+                0 2px 4px rgba(0,0,0,0.02),
+                0 12px 24px rgba(0,0,0,0.06),
+                0 32px 64px rgba(0,0,0,0.08);
+            max-width: 480px;
+            margin-left: auto;
+            position: relative;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .dashboard-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--red-crayola), var(--oxford-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .dashboard-user h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-900);
+        }
+        
+        .dashboard-user p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
+        .dashboard-status {
+            margin-left: auto;
+            background: rgba(16,185,129,0.1);
+            color: #059669;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .progress-card {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .progress-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .progress-card-header span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        
+        .progress-card-header strong {
+            font-size: 0.85rem;
+            color: var(--gray-900);
+        }
+        
+        .progress-track {
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .progress-fill.blue { background: var(--oxford-blue); }
+        .progress-fill.pink { background: var(--red-crayola); }
+        .progress-fill.yellow { background: #f59e0b; }
+        
+        .floating-badge {
+            position: absolute;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .floating-badge.top-right {
+            top: -20px;
+            right: -30px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .floating-badge.bottom-left {
+            bottom: -20px;
+            left: -30px;
+            animation: float 3s ease-in-out infinite 1.5s;
+        }
+        
+        .floating-badge i {
+            font-size: 1.2rem;
+        }
+        
+        .floating-badge.success i { color: #10b981; }
+        .floating-badge.warning i { color: #f59e0b; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        /* Features Section - Bento Grid */
+        .features-section {
+            padding: 80px 0;
+            background: var(--white);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .section-tag {
+            display: inline-block;
+            background: rgba(238,75,106,0.1);
+            color: var(--red-crayola);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+        
+        .section-desc {
+            color: var(--gray-500);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        @media (max-width: 992px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .bento-card {
+            background: var(--gray-50);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bento-card:hover {
+            background: var(--white);
+            border-color: var(--gray-200);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+        }
+        
+        .bento-card.large {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 576px) {
+            .bento-card.large {
+                grid-column: span 1;
+            }
+        }
+        
+        .bento-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        .bento-icon.blue { 
+            background: rgba(0,33,71,0.1);
+            color: var(--oxford-blue);
+        }
+        
+        .bento-icon.pink { 
+            background: rgba(238,75,106,0.1);
+            color: var(--red-crayola);
+        }
+        
+        .bento-icon.yellow { 
+            background: rgba(245,158,11,0.1);
+            color: #d97706;
+        }
+        
+        .bento-card h4 {
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .bento-card p {
+            color: var(--gray-500);
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        /* Stats Banner */
+        .stats-banner {
+            padding: 80px 0;
+            background: var(--oxford-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(238,75,106,0.1) 0%, transparent 60%);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 48px;
+            text-align: center;
+        }
+        
+        .stat-block .number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+        
+        .stat-block .number span {
+            color: var(--naples-yellow);
+        }
+        
+        .stat-block .label {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        /* Roles Section - Modern Cards */
+        .roles-section {
+            padding: 120px 0;
+            background: var(--gray-50);
+        }
+        
+        .role-card-modern {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px 32px;
+            height: 100%;
+            border: 1px solid var(--gray-100);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .role-card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-crayola), var(--oxford-blue));
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+        
+        .role-card-modern:hover {
+            border-color: transparent;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.08);
+            transform: translateY(-8px);
+        }
+        
+        .role-card-modern:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .role-icon-modern {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+        }
+        
+        .role-icon-modern.student {
+            background: rgba(0,33,71,0.1);
+            color: var(--oxford-blue);
+        }
+        
+        .role-icon-modern.faculty {
+            background: rgba(238,75,106,0.1);
+            color: var(--red-crayola);
+        }
+        
+        .role-icon-modern.admin {
+            background: rgba(107,114,128,0.1);
+            color: var(--gray-600);
+        }
+        
+        .role-card-modern h3 {
+            color: var(--gray-900);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+        
+        .role-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .role-features li {
+            color: var(--gray-600);
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .role-features li i {
+            color: #10b981;
+            font-size: 0.9rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 0;
+            background: var(--white);
+        }
+        
+        .cta-container {
+            background: linear-gradient(135deg, var(--oxford-blue) 0%, #001a38 100%);
+            border-radius: 32px;
+            padding: 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(238,75,106,0.15) 0%, transparent 60%);
+        }
+        
+        .cta-container::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -10%;
+            width: 40%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(250,218,94,0.1) 0%, transparent 60%);
+        }
+        
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 16px;
+            position: relative;
+            letter-spacing: -1px;
+        }
+        
+        .cta-subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.15rem;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .btn-cta {
+            background: var(--white);
+            color: var(--oxford-blue);
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+            color: var(--oxford-blue);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--gray-900);
+            padding: 80px 0 40px;
+        }
+        
+        .footer-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .footer-brand .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--red-crayola);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .footer-text {
+            color: var(--gray-500);
+            line-height: 1.7;
+            max-width: 280px;
+            font-size: 0.9rem;
+        }
+        
+        .footer h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--gray-500);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--white);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 32px;
+            margin-top: 64px;
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .bento-card.large {
+                grid-column: span 1;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+            .hero-stats {
+                gap: 32px;
+            }
+            .dashboard-preview {
+                margin: 48px auto 0;
+                max-width: 100%;
+            }
+            .floating-badge {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 24px;
+            }
+            .stat-item {
+                flex: 0 0 45%;
+            }
+            .cta-container {
+                padding: 48px 24px;
+            }
+            .hero-buttons {
+                flex-direction: column;
+            }
+            .btn-primary-modern, .btn-secondary-modern {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modern Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <div class="logo-icon"><i class="bi bi-briefcase-fill"></i></div>
+                SmartIntern
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#roles">Solutions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'login' %}" class="btn btn-nav-login">Sign in</a>
+                    <a href="{% url 'register' %}" class="btn btn-nav-register">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-glow-2"></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <div class="hero-eyebrow">
+                        <span class="dot"></span>
+                        Now available for 2025-26 batch
+                    </div>
+                    <h1 class="hero-title">
+                        The smarter way to<br>
+                        <span class="gradient-text">manage internships</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Streamline applications, track progress, and connect students with faculty—all in one modern platform built for HICAS.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'register' %}" class="btn-primary-modern">
+                            Start for free <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="#features" class="btn-secondary-modern">
+                            <i class="bi bi-play-circle"></i> See how it works
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">5,000+</div>
+                            <div class="stat-label">Active students</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">393</div>
+                            <div class="stat-label">Faculty members</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Success rate</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-visual d-none d-lg-block">
+                    <div class="dashboard-preview">
+                        <div class="floating-badge top-right success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Approved
+                        </div>
+                        <div class="floating-badge bottom-left warning">
+                            <i class="bi bi-clock-fill"></i>
+                            2 Pending
+                        </div>
+                        <div class="dashboard-header">
+                            <div class="dashboard-avatar">RS</div>
+                            <div class="dashboard-user">
+                                <h5>Rahul Sharma</h5>
+                                <p>B.Sc Computer Science • III Year</p>
+                            </div>
+                            <span class="dashboard-status">Active</span>
+                        </div>
+                        <div class="progress-card">
+                            <div class="progress-card-header">
+                                <span>Weekly logs submitted</span>
+                                <strong>8 of 12</strong>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill blue" style="width: 66%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-card">
+                            <div class="progress-card-header">
+                                <span>Faculty reviews</span>
+                                <strong>6 of 8</strong>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill pink" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-card">
+                            <div class="progress-card-header">
+                                <span>Internship completion</span>
+                                <strong>85%</strong>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill yellow" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section - Bento Grid -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Features</span>
+                <h2 class="section-title">Everything you need</h2>
+                <p class="section-desc">Powerful tools to manage every aspect of the internship journey</p>
+            </div>
+            <div class="bento-grid">
+                <div class="bento-card">
+                    <div class="bento-icon blue"><i class="bi bi-file-earmark-text"></i></div>
+                    <h4>Seamless Applications</h4>
+                    <p>Submit internship applications with all required documents and get real-time status updates.</p>
+                </div>
+                <div class="bento-card">
+                    <div class="bento-icon pink"><i class="bi bi-calendar-check"></i></div>
+                    <h4>Weekly Tracking</h4>
+                    <p>Log your progress weekly with file attachments and receive faculty feedback.</p>
+                </div>
+                <div class="bento-card">
+                    <div class="bento-icon yellow"><i class="bi bi-graph-up"></i></div>
+                    <h4>Analytics</h4>
+                    <p>Beautiful dashboards with charts and insights to track performance.</p>
+                </div>
+                <div class="bento-card">
+                    <div class="bento-icon pink"><i class="bi bi-shield-check"></i></div>
+                    <h4>Faculty Review</h4>
+                    <p>Streamlined approval workflow for faculty members.</p>
+                </div>
+                <div class="bento-card">
+                    <div class="bento-icon blue"><i class="bi bi-diagram-3"></i></div>
+                    <h4>Smart Mapping</h4>
+                    <p>Auto faculty-student assignment based on department.</p>
+                </div>
+                <div class="bento-card">
+                    <div class="bento-icon yellow"><i class="bi bi-file-earmark-pdf"></i></div>
+                    <h4>Reports</h4>
+                    <p>Generate PDF and Excel reports for complete documentation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Banner -->
+    <section class="stats-banner">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-block">
+                    <div class="number">5000<span>+</span></div>
+                    <div class="label">Students</div>
+                </div>
+                <div class="stat-block">
+                    <div class="number">393</div>
+                    <div class="label">Faculty</div>
+                </div>
+                <div class="stat-block">
+                    <div class="number">30<span>+</span></div>
+                    <div class="label">Departments</div>
+                </div>
+                <div class="stat-block">
+                    <div class="number">98<span>%</span></div>
+                    <div class="label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roles Section -->
+    <section class="roles-section" id="roles">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Solutions</span>
+                <h2 class="section-title">Built for everyone</h2>
+                <p class="section-desc">Tailored experiences for each role in the internship ecosystem</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="role-card-modern">
+                        <div class="role-icon-modern student">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <h3>For Students</h3>
+                        <ul class="role-features">
+                            <li><i class="bi bi-check2"></i> Apply for internships easily</li>
+                            <li><i class="bi bi-check2"></i> Submit weekly progress logs</li>
+                            <li><i class="bi bi-check2"></i> Upload offer letters & documents</li>
+                            <li><i class="bi bi-check2"></i> Track application status</li>
+                            <li><i class="bi bi-check2"></i> View faculty feedback</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="role-card-modern">
+                        <div class="role-icon-modern faculty">
+                            <i class="bi bi-person-workspace"></i>
+                        </div>
+                        <h3>For Faculty</h3>
+                        <ul class="role-features">
+                            <li><i class="bi bi-check2"></i> Review student applications</li>
+                            <li><i class="bi bi-check2"></i> Approve or reject submissions</li>
+                            <li><i class="bi bi-check2"></i> Provide detailed feedback</li>
+                            <li><i class="bi bi-check2"></i> Monitor student progress</li>
+                            <li><i class="bi bi-check2"></i> Access analytics dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="role-card-modern">
+                        <div class="role-icon-modern admin">
+                            <i class="bi bi-gear-fill"></i>
+                        </div>
+                        <h3>For Admins</h3>
+                        <ul class="role-features">
+                            <li><i class="bi bi-check2"></i> Complete system overview</li>
+                            <li><i class="bi bi-check2"></i> Department-wise analytics</li>
+                            <li><i class="bi bi-check2"></i> Generate PDF/Excel reports</li>
+                            <li><i class="bi bi-check2"></i> Monitor all activities</li>
+                            <li><i class="bi bi-check2"></i> Manage faculty assignments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-container">
+                <h2 class="cta-title">Ready to get started?</h2>
+                <p class="cta-subtitle">Join thousands of students already managing their internships smarter</p>
+                <a href="{% url 'register' %}" class="btn-cta">
+                    Create your account <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-brand">
+                        <div class="logo-icon"><i class="bi bi-briefcase-fill text-white"></i></div>
+                        SmartIntern
+                    </div>
+                    <p class="footer-text">The modern internship management platform for HICAS College, designed to streamline every step of the process.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Product</h5>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#roles">Solutions</a></li>
+                        <li><a href="{% url 'login' %}">Sign in</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="{% url 'forgot_password' %}">Reset Password</a></li>
+                        <li><a href="#">Documentation</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5>Contact</h5>
+                    <ul class="footer-links">
+                        <li>HICAS College, Coimbatore</li>
+                        <li>support@hicas.ac.in</li>
+                        <li>+91 98765 43210</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <p class="mb-0">© 2025 SmartIntern. All rights reserved.</p>
+                    <p class="mb-0" style="font-size: 0.85rem;">
+                        <i class="bi bi-code-slash me-1"></i> Developed by <strong>Rakesh</strong> 
+                        <span class="mx-2">|</span>
+                        <a href="mailto:rakeshsakthi253@gmail.com" style="color: var(--red-crayola); text-decoration: none;">
+                            <i class="bi bi-envelope me-1"></i>rakeshsakthi253@gmail.com
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            navbar.classList.toggle('scrolled', window.scrollY > 20);
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Animate progress bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.width = entry.target.dataset.width || entry.target.style.width;
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        document.querySelectorAll('.progress-fill').forEach(bar => {
+            observer.observe(bar);
+        });
+    </script>
+</body>
+</html>

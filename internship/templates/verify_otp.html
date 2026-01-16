@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP - SmartIntern{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .navbar {
+        display: none;
+    }
+
+    .page-content {
+        padding: 0;
+    }
+
+    .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+    }
+
+    .auth-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(0, 33, 71, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(238, 75, 106, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--gray-200);
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--oxford-blue);
+        margin-bottom: 1.5rem;
+        text-decoration: none;
+    }
+
+    .auth-logo i {
+        color: var(--red-crayola);
+    }
+
+    .auth-icon {
+        width: 56px;
+        height: 56px;
+        background: rgba(238, 75, 106, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+
+    .auth-icon i {
+        font-size: 1.5rem;
+        color: var(--red-crayola);
+    }
+
+    .auth-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .otp-inputs {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .otp-input {
+        width: 48px;
+        height: 52px;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        border: 1px solid var(--gray-300);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        color: var(--gray-900);
+    }
+
+    .otp-input:focus {
+        border-color: var(--oxford-blue);
+        box-shadow: 0 0 0 3px rgba(0, 33, 71, 0.1);
+        outline: none;
+    }
+
+    .otp-input::placeholder {
+        color: var(--gray-300);
+    }
+
+    .section-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--gray-200);
+    }
+
+    .section-divider span {
+        font-size: 0.75rem;
+        color: var(--gray-400);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .auth-form .form-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-form .form-control {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--gray-300);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+
+    .auth-form .form-control:focus {
+        border-color: var(--oxford-blue);
+        box-shadow: 0 0 0 3px rgba(0, 33, 71, 0.1);
+    }
+
+    .auth-form .form-control::placeholder {
+        color: var(--gray-400);
+    }
+
+    .btn-auth {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        background: var(--oxford-blue);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-auth:hover {
+        background: #001a38;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 33, 71, 0.3);
+    }
+
+    .timer-section {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--gray-200);
+    }
+
+    .timer-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--gray-100);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        color: var(--gray-600);
+        margin-bottom: 1rem;
+    }
+
+    .timer-badge .timer-value {
+        font-weight: 600;
+        color: var(--oxford-blue);
+    }
+
+    .timer-badge.expired {
+        background: #fee2e2;
+    }
+
+    .timer-badge.expired .timer-value {
+        color: #dc2626;
+    }
+
+    .resend-link a {
+        color: var(--gray-500);
+        text-decoration: none;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        transition: color 0.2s ease;
+    }
+
+    .resend-link a:hover {
+        color: var(--oxford-blue);
+    }
+
+    .alert {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .auth-header h1 {
+            font-size: 1.25rem;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 46px;
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="{% url 'home' %}" class="auth-logo">
+                <i class="bi bi-briefcase-fill"></i>
+                SmartIntern
+            </a>
+            <div class="auth-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <h1>Verify OTP</h1>
+            <p>Enter the 6-digit code sent to your phone</p>
+        </div>
+        
+        {% if messages %}
+        <div class="auth-alerts">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="{% url 'verify_otp' %}" id="otpForm" class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="username" value="{{ username }}">
+            <input type="hidden" name="action" value="verify">
+            
+            <div class="otp-inputs">
+                <input type="text" class="otp-input" maxlength="1" name="otp1" required placeholder="•">
+                <input type="text" class="otp-input" maxlength="1" name="otp2" required placeholder="•">
+                <input type="text" class="otp-input" maxlength="1" name="otp3" required placeholder="•">
+                <input type="text" class="otp-input" maxlength="1" name="otp4" required placeholder="•">
+                <input type="text" class="otp-input" maxlength="1" name="otp5" required placeholder="•">
+                <input type="text" class="otp-input" maxlength="1" name="otp6" required placeholder="•">
+            </div>
+            
+            <input type="hidden" name="otp" id="otpHidden">
+            
+            <div class="section-divider">
+                <span>New Password</span>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">New Password</label>
+                <input type="password" name="new_password" class="form-control" placeholder="Enter new password" required minlength="8">
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="confirm_password" class="form-control" placeholder="Confirm new password" required minlength="8">
+            </div>
+            
+            <button type="submit" class="btn-auth">
+                Reset Password
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        </form>
+        
+        <div class="timer-section">
+            <div class="timer-badge" id="timerBadge">
+                <i class="bi bi-clock"></i>
+                <span>Expires in</span>
+                <span class="timer-value" id="timer">05:00</span>
+            </div>
+            <div class="resend-link">
+                <a href="{% url 'forgot_password' %}"><i class="bi bi-arrow-counterclockwise"></i> Resend OTP</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-focus next input
+    const otpInputs = document.querySelectorAll('.otp-input');
+    
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            // Only allow numbers
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            
+            if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+        
+        // Handle paste
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+            pastedData.split('').forEach((char, i) => {
+                if (otpInputs[index + i]) {
+                    otpInputs[index + i].value = char;
+                }
+            });
+            const nextIndex = Math.min(index + pastedData.length, otpInputs.length - 1);
+            otpInputs[nextIndex].focus();
+        });
+    });
+    
+    // Focus first input on load
+    otpInputs[0].focus();
+    
+    // Combine OTP on form submit
+    document.getElementById('otpForm').addEventListener('submit', function(e) {
+        let otp = '';
+        otpInputs.forEach(input => {
+            otp += input.value;
+        });
+        document.getElementById('otpHidden').value = otp;
+    });
+    
+    // Timer countdown
+    let timeLeft = 300; // 5 minutes
+    const timerElement = document.getElementById('timer');
+    const timerBadge = document.getElementById('timerBadge');
+    
+    const countdown = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerElement.textContent = 'Expired';
+            timerBadge.classList.add('expired');
+        }
+    }, 1000);
+</script>
+{% endblock %}

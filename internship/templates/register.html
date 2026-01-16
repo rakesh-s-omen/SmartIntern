@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% block title %}Register - SmartIntern{% endblock %}
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .navbar {
+        display: none;
+    }
+
+    .page-content {
+        padding: 0;
+    }
+
+    .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+    }
+
+    .auth-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(0, 33, 71, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(238, 75, 106, 0.03) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--gray-200);
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .auth-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--oxford-blue);
+        margin-bottom: 1.25rem;
+        text-decoration: none;
+    }
+
+    .auth-logo i {
+        color: var(--red-crayola);
+    }
+
+    .auth-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .info-banner {
+        background: rgba(0, 33, 71, 0.05);
+        border: 1px solid rgba(0, 33, 71, 0.1);
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .info-banner i {
+        color: var(--oxford-blue);
+        font-size: 1rem;
+        margin-top: 0.125rem;
+    }
+
+    .info-banner p {
+        color: var(--gray-700);
+        font-size: 0.813rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .auth-form .form-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-form .form-control {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--gray-300);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+
+    .auth-form .form-control:focus {
+        border-color: var(--oxford-blue);
+        box-shadow: 0 0 0 3px rgba(0, 33, 71, 0.1);
+        outline: none;
+    }
+
+    .auth-form .form-control::placeholder {
+        color: var(--gray-400);
+    }
+
+    .form-hint {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        margin-top: 0.375rem;
+    }
+
+    .btn-auth {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        background: var(--oxford-blue);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .btn-auth:hover {
+        background: #001a38;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 33, 71, 0.3);
+    }
+
+    .auth-divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        position: relative;
+    }
+
+    .auth-divider::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 1px;
+        background: var(--gray-200);
+    }
+
+    .auth-divider span {
+        background: white;
+        padding: 0 1rem;
+        color: var(--gray-400);
+        font-size: 0.813rem;
+        position: relative;
+    }
+
+    .auth-footer {
+        text-align: center;
+    }
+
+    .auth-footer p {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .auth-footer a {
+        color: var(--oxford-blue);
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .auth-footer a:hover {
+        color: var(--red-crayola);
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .back-link a {
+        color: var(--gray-400);
+        text-decoration: none;
+        font-size: 0.813rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.2s ease;
+    }
+
+    .back-link a:hover {
+        color: var(--gray-600);
+    }
+
+    .alert {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.813rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert ul {
+        margin: 0.5rem 0 0 0;
+        padding-left: 1.25rem;
+    }
+
+    .password-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .auth-header h1 {
+            font-size: 1.25rem;
+        }
+
+        .password-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="{% url 'home' %}" class="auth-logo">
+                <i class="bi bi-briefcase-fill"></i>
+                SmartIntern
+            </a>
+            <h1>Create your account</h1>
+            <p>Register using your Registration Number</p>
+        </div>
+        
+        {% if messages %}
+        <div class="auth-alerts">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            <strong>Please correct the following errors:</strong>
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <div class="info-banner">
+            <i class="bi bi-info-circle"></i>
+            <p>Your registration number (e.g., 82302630143) will be your login username. Department and year will be automatically detected.</p>
+        </div>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Registration Number</label>
+                {{ form.register_number }}
+                <p class="form-hint">This will be your username for login</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                {{ form.full_name }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mobile Number</label>
+                {{ form.mobile_number }}
+            </div>
+            <div class="password-row mb-3">
+                <div>
+                    <label class="form-label">Password</label>
+                    {{ form.password1 }}
+                </div>
+                <div>
+                    <label class="form-label">Confirm Password</label>
+                    {{ form.password2 }}
+                </div>
+            </div>
+            <button type="submit" class="btn-auth">
+                Create account
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        </form>
+        
+        <div class="auth-divider">
+            <span>or</span>
+        </div>
+        
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
+        
+        <div class="back-link">
+            <a href="{% url 'home' %}"><i class="bi bi-arrow-left"></i> Back to home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

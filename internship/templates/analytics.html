@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}Analytics Dashboard{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1><i class="bi bi-graph-up me-2"></i>Analytics Dashboard</h1>
+            <p>Insights and statistics for internship management</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6><i class="bi bi-people"></i> Total Students</h6>
+                    <h3>{{ total_students }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6><i class="bi bi-briefcase"></i> Total Internships</h6>
+                    <h3>{{ total_internships }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6><i class="bi bi-trophy"></i> Completion Rate</h6>
+                    <h3>{{ completion_percentage|floatformat:1 }}%</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-bar-chart"></i> Domain-wise Internship Distribution
+                    </div>
+                    <div class="card-body">
+                        {% if domain_chart %}
+                        <img src="data:image/png;base64,{{ domain_chart }}" class="img-fluid" alt="Domain Chart">
+                        {% else %}
+                        <p class="text-center">No data available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-building"></i> Top 10 Companies
+                    </div>
+                    <div class="card-body">
+                        {% if company_chart %}
+                        <img src="data:image/png;base64,{{ company_chart }}" class="img-fluid" alt="Company Chart">
+                        {% else %}
+                        <p class="text-center">No data available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-table"></i> Domain-wise Statistics
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Domain</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in domain_data %}
+                                    <tr>
+                                        <td>{{ item.internship_domain }}</td>
+                                        <td><span class="badge bg-primary">{{ item.count }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-table"></i> Company-wise Statistics
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in company_data %}
+                                    <tr>
+                                        <td>{{ item.company_name }}</td>
+                                        <td><span class="badge bg-success">{{ item.count }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="bi bi-download"></i> Download Reports
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{% url 'download_pdf' %}" class="btn btn-danger w-100">
+                            <i class="bi bi-file-pdf"></i> Download PDF Report
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'download_excel' %}" class="btn btn-success w-100">
+                            <i class="bi bi-file-excel"></i> Download Excel Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

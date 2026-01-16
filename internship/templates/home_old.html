@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartIntern - Internship Management Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #002147;
+            --secondary-color: #EE4B6A;
+            --accent-color: #FADA5E;
+            --dark-color: #002147;
+            --light-color: #F5FFFA;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #003366);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+        }
+        
+        .navbar-brand i {
+            color: var(--accent-color);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+        
+        .btn-login {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 25px;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+        
+        .btn-login:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+        
+        .btn-register {
+            background: var(--secondary-color);
+            border: none;
+            color: white;
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-register:hover {
+            background: #d43d5a;
+            transform: scale(1.05);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #003366 50%, #001a33 100%);
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></svg>');
+            background-size: 100px 100px;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero-title span {
+            color: var(--accent-color);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-hero-primary {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-hero-primary:hover {
+            background: #d43d5a;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(238, 75, 106, 0.4);
+            color: white;
+        }
+        
+        .btn-hero-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--accent-color);
+        }
+        
+        .btn-hero-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+            color: white;
+        }
+        
+        .hero-image {
+            text-align: center;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+        }
+        
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 100px 0;
+            background: var(--light-color);
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+        
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(67, 97, 238, 0.15);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .feature-card h4 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Roles Section */
+        .roles-section {
+            padding: 100px 0;
+            background: white;
+        }
+        
+        .role-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 25px;
+            padding: 50px 40px;
+            color: white;
+            text-align: center;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        
+        .role-card.student {
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+        }
+        
+        .role-card.faculty {
+            background: linear-gradient(135deg, #8338ec, #5a189a);
+        }
+        
+        .role-card.admin {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+        }
+        
+        .role-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        .role-icon {
+            font-size: 4rem;
+            margin-bottom: 25px;
+        }
+        
+        .role-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .role-card ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        
+        .role-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .role-card li i {
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--light-color);
+        }
+        
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        .step-card h5 {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .step-card p {
+            color: #666;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-section p {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark-color);
+            padding: 60px 0 30px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .footer h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .footer a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: var(--accent-color);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 30px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        /* Floating shapes */
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-color);
+            top: 10%;
+            right: 10%;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: white;
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            .stat-item {
+                flex: 0 0 45%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="bi bi-briefcase-fill"></i> SmartIntern
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#roles">For You</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'login' %}" class="btn btn-login">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-register">
+                        <i class="bi bi-person-plus"></i> Register
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">
+                        Manage Your <span>Internships</span> Smartly
+                    </h1>
+                    <p class="hero-subtitle">
+                        A comprehensive platform for students, faculty, and administrators to streamline 
+                        internship applications, weekly progress tracking, and performance monitoring.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'register' %}" class="btn btn-hero-primary">
+                            <i class="bi bi-rocket-takeoff"></i> Get Started
+                        </a>
+                        <a href="#features" class="btn btn-hero-secondary">
+                            <i class="bi bi-play-circle"></i> Learn More
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">5000+</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">393</div>
+                            <div class="stat-label">Faculty</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">600+</div>
+                            <div class="stat-label">Internships</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">30+</div>
+                            <div class="stat-label">Departments</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-image d-none d-lg-block">
+                    <svg width="500" height="400" viewBox="0 0 500 400">
+                        <!-- Simple illustration -->
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4cc9f0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#4361ee;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Dashboard mockup -->
+                        <rect x="50" y="50" width="400" height="280" rx="20" fill="white" opacity="0.95"/>
+                        <rect x="70" y="80" width="150" height="30" rx="5" fill="url(#grad1)" opacity="0.8"/>
+                        <rect x="70" y="130" width="360" height="15" rx="5" fill="#e0e0e0"/>
+                        <rect x="70" y="160" width="300" height="15" rx="5" fill="#e0e0e0"/>
+                        <rect x="70" y="190" width="200" height="15" rx="5" fill="#e0e0e0"/>
+                        <!-- Chart bars -->
+                        <rect x="70" y="270" width="40" height="40" rx="5" fill="url(#grad1)" opacity="0.9"/>
+                        <rect x="120" y="250" width="40" height="60" rx="5" fill="url(#grad1)" opacity="0.8"/>
+                        <rect x="170" y="230" width="40" height="80" rx="5" fill="url(#grad1)" opacity="0.7"/>
+                        <rect x="220" y="260" width="40" height="50" rx="5" fill="url(#grad1)" opacity="0.6"/>
+                        <rect x="270" y="240" width="40" height="70" rx="5" fill="url(#grad1)" opacity="0.7"/>
+                        <!-- Floating elements -->
+                        <circle cx="420" cy="120" r="30" fill="#4cc9f0" opacity="0.3"/>
+                        <circle cx="380" cy="60" r="15" fill="#4361ee" opacity="0.3"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Powerful Features</h2>
+                <p class="section-subtitle">Everything you need to manage internships efficiently</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h4>Easy Applications</h4>
+                        <p>Submit internship applications with all required documents in one place. Track status in real-time.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-calendar-week"></i>
+                        </div>
+                        <h4>Weekly Progress</h4>
+                        <p>Submit weekly logs with file attachments. Get feedback from assigned faculty members.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h4>Analytics Dashboard</h4>
+                        <p>Visualize internship trends, department statistics, and student performance metrics.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4>Faculty Review</h4>
+                        <p>Faculty can review, provide feedback, and approve submissions from assigned students.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h4>Department Mapping</h4>
+                        <p>Automatic faculty-student mapping based on department for streamlined management.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                        </div>
+                        <h4>Report Generation</h4>
+                        <p>Download comprehensive reports in PDF and Excel formats for documentation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roles Section -->
+    <section class="roles-section" id="roles">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Built For Everyone</h2>
+                <p class="section-subtitle">Tailored experience for each user role</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="role-card student">
+                        <div class="role-icon">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <h3>Students</h3>
+                        <ul>
+                            <li><i class="bi bi-check2"></i> Apply for internships</li>
+                            <li><i class="bi bi-check2"></i> Submit weekly progress logs</li>
+                            <li><i class="bi bi-check2"></i> Upload documents & proofs</li>
+                            <li><i class="bi bi-check2"></i> View faculty feedback</li>
+                            <li><i class="bi bi-check2"></i> Track application status</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="role-card faculty">
+                        <div class="role-icon">
+                            <i class="bi bi-person-workspace"></i>
+                        </div>
+                        <h3>Faculty</h3>
+                        <ul>
+                            <li><i class="bi bi-check2"></i> Review student applications</li>
+                            <li><i class="bi bi-check2"></i> Approve/reject submissions</li>
+                            <li><i class="bi bi-check2"></i> Provide weekly feedback</li>
+                            <li><i class="bi bi-check2"></i> Monitor student progress</li>
+                            <li><i class="bi bi-check2"></i> View department analytics</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="role-card admin">
+                        <div class="role-icon">
+                            <i class="bi bi-gear"></i>
+                        </div>
+                        <h3>Administrators</h3>
+                        <ul>
+                            <li><i class="bi bi-check2"></i> Overview of all internships</li>
+                            <li><i class="bi bi-check2"></i> Department-wise analytics</li>
+                            <li><i class="bi bi-check2"></i> Generate reports</li>
+                            <li><i class="bi bi-check2"></i> Monitor faculty load</li>
+                            <li><i class="bi bi-check2"></i> System-wide statistics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Simple steps to get started</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h5>Register</h5>
+                        <p>Create your account using your registration number</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h5>Apply</h5>
+                        <p>Submit your internship application with details</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h5>Track</h5>
+                        <p>Submit weekly logs and track your progress</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h5>Complete</h5>
+                        <p>Get feedback and complete your internship</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Get Started?</h2>
+            <p>Join thousands of students managing their internships smartly</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'register' %}" class="btn btn-hero-primary btn-lg">
+                    <i class="bi bi-person-plus"></i> Create Account
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-hero-secondary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5><i class="bi bi-briefcase-fill text-info"></i> SmartIntern</h5>
+                    <p>A comprehensive internship management portal for HICAS College. Streamlining the internship process for students, faculty, and administrators.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'register' %}">Register</a></li>
+                        <li><a href="#features">Features</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-4 mb-4">
+                    <h5>For Users</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Student Guide</a></li>
+                        <li><a href="#">Faculty Guide</a></li>
+                        <li><a href="{% url 'forgot_password' %}">Forgot Password</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-4 mb-4">
+                    <h5>Contact</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-geo-alt"></i> HICAS College, Coimbatore</li>
+                        <li><i class="bi bi-envelope"></i> support@hicas.ac.in</li>
+                        <li><i class="bi bi-telephone"></i> +91 98765 43210</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SmartIntern - HICAS College. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Navbar background change on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'linear-gradient(135deg, #3f37c9, #1a1a2e)';
+            } else {
+                navbar.style.background = 'linear-gradient(135deg, #4361ee, #3f37c9)';
+            }
+        });
+    </script>
+</body>
+</html>

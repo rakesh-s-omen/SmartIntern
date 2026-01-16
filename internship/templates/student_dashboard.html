@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-grid-1x2 me-2"></i>Student Dashboard</h1>
+    <p>Track your internship applications and progress</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <p>Total Applications</p>
+            <h3>{{ total_applications }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card accent">
+            <p>Approved</p>
+            <h3>{{ approved_applications }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <p>Weeks Submitted</p>
+            <h3>{{ logs.count }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <p>Pending Reviews</p>
+            <h3>{{ logs|length }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Applications Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-file-earmark-text me-2"></i>My Internship Applications</span>
+        <a href="{% url 'apply_internship' %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> New Application
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Domain</th>
+                        <th>Duration</th>
+                        <th>Faculty Assigned</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td><strong>{{ app.company_name }}</strong></td>
+                        <td>{{ app.internship_domain }}</td>
+                        <td>{{ app.start_date|date:"M d" }} - {{ app.end_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% if app.assigned_faculty %}
+                            <span class="badge bg-info">{{ app.assigned_faculty.full_name }}</span>
+                            {% else %}
+                            <span class="text-muted">Not Assigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.application_status == 'approved' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Approved</span>
+                            {% elif 'rejected' in app.application_status %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> {{ app.get_application_status_display }}</span>
+                            {% elif app.application_status == 'pending_company' %}
+                            <span class="badge bg-warning"><i class="bi bi-building"></i> Awaiting Company</span>
+                            {% elif app.application_status == 'pending_faculty' %}
+                            <span class="badge bg-info"><i class="bi bi-person-badge"></i> Faculty Review</span>
+                            {% else %}
+                            <span class="badge bg-secondary"><i class="bi bi-hourglass-split"></i> {{ app.get_application_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.application_status == 'approved' %}
+                            <a href="{% url 'submit_weekly_log' app.application_id %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-upload"></i> Submit
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <div class="empty-state">
+                                <i class="bi bi-file-earmark-x"></i>
+                                <h5>No applications yet</h5>
+                                <p class="text-muted mb-3">Start your internship journey by applying now!</p>
+                                <a href="{% url 'apply_internship' %}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i> Apply Now
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Weekly Progress Timeline -->
+{% for app_data in applications_with_weeks %}
+{% if app_data.application.application_status == 'approved' %}
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-calendar-week me-2"></i>Weekly Progress - {{ app_data.application.company_name }}</span>
+        <span class="badge bg-primary">{{ app_data.submitted_count }} / {{ app_data.total_weeks }} weeks</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Week</th>
+                        <th style="width: 140px;">Status</th>
+                        <th>Faculty Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in app_data.weeks %}
+                    <tr>
+                        <td class="fw-bold">Week {{ week.week }}</td>
+                        <td>
+                            {% if week.submitted %}
+                                {% if week.status == 'reviewed' %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Reviewed</span>
+                                {% else %}
+                                <span class="badge bg-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary"><i class="bi bi-dash-circle"></i> Not Submitted</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if week.feedback %}
+                            <span class="text-success"><i class="bi bi-chat-quote me-1"></i>{{ week.feedback }}</span>
+                            {% elif week.submitted and week.status == 'pending' %}
+                            <span class="text-muted fst-italic">Awaiting faculty review...</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center mt-3">
+            <a href="{% url 'submit_weekly_log' app_data.application.application_id %}" class="btn btn-primary">
+                <i class="bi bi-upload me-1"></i> Submit Next Week
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<!-- Recent Submissions with Feedback -->
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-clock-history me-2"></i>Recent Submissions & Feedback
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Company</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td><strong>Week {{ log.week_number }}</strong></td>
+                        <td>{{ log.application.company_name }}</td>
+                        <td>{{ log.submission_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% if log.review_status == 'reviewed' %}
+                            <span class="badge bg-success"><i class="bi bi-check"></i> Reviewed</span>
+                            {% else %}
+                            <span class="badge bg-warning"><i class="bi bi-hourglass"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.faculty_feedback %}
+                            <span class="text-success">{{ log.faculty_feedback|truncatewords:15 }}</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <span class="text-muted">No submissions yet</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

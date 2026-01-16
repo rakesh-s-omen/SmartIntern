@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Submit Completion Certificate{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-award"></i> Submit Internship Completion for {{ application.company_name }}
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Internship Duration:</strong> {{ application.start_date }} to {{ application.end_date }}
+                </div>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Upload Completion Certificate (PDF/Image) *</label>
+                        {{ form.completion_certificate }}
+                        <small class="text-muted">Upload your internship completion certificate</small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Submit for Verification
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Apply for Internship{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-plus"></i> Apply for Internship
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Company Name *</label>
+                            {{ form.company_name }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Internship Domain *</label>
+                            {{ form.internship_domain }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Mode *</label>
+                            {{ form.internship_mode }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Start Date *</label>
+                            {{ form.start_date }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">End Date *</label>
+                            {{ form.end_date }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Offer Letter (PDF/Image) *</label>
+                            {{ form.offer_letter_file }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NOC File (Optional)</label>
+                            {{ form.noc_file }}
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Submit Application
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

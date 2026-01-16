@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}All Faculty - SmartIntern{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-people me-2"></i>All Faculty Assignments</h1>
+    <p>Complete list of faculty with their assigned students</p>
+</div>
+
+<!-- Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <p>Total Faculty</p>
+            <h3>{{ total_faculty }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <p>With Students</p>
+            <h3>{{ faculty_list|length }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card accent">
+            <p>Pending Reviews</p>
+            <h3>{{ total_pending_reviews }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary w-100 h-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="searchFaculty" class="form-control" placeholder="Search faculty by name or department...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select id="filterDept" class="form-select">
+                    <option value="">All Departments</option>
+                    {% for faculty in faculty_list %}
+                    {% if forloop.first or faculty.department != prev_dept %}
+                    <option value="{{ faculty.get_department_display }}">{{ faculty.get_department_display }}</option>
+                    {% endif %}
+                    {% with faculty.department as prev_dept %}{% endwith %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 text-end">
+                <span class="text-muted" id="resultCount">Showing {{ faculty_list|length }} faculty</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Faculty Table -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-table me-2"></i>Faculty List
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="facultyTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Faculty Name</th>
+                        <th>Department</th>
+                        <th>Assigned Students</th>
+                        <th>Approved</th>
+                        <th>Pending Apps</th>
+                        <th>Pending Reviews</th>
+                        <th>Load</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for faculty in faculty_list %}
+                    <tr class="faculty-row">
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <strong>{{ faculty.full_name }}</strong>
+                            <br><small class="text-muted">{{ faculty.employee_id }}</small>
+                        </td>
+                        <td class="dept-cell">
+                            <span class="badge bg-secondary">{{ faculty.get_department_display }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary fs-6">{{ faculty.assigned_count }}</span>
+                        </td>
+                        <td>
+                            {% if faculty.approved_count > 0 %}
+                            <span class="badge bg-success">{{ faculty.approved_count }}</span>
+                            {% else %}
+                            <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if faculty.pending_count > 0 %}
+                            <span class="badge bg-warning text-dark">{{ faculty.pending_count }}</span>
+                            {% else %}
+                            <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if faculty.pending_reviews > 0 %}
+                            <span class="badge bg-danger">{{ faculty.pending_reviews }}</span>
+                            {% else %}
+                            <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td style="min-width: 150px;">
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar 
+                                    {% if faculty.assigned_count >= 10 %}bg-danger
+                                    {% elif faculty.assigned_count >= 5 %}bg-warning
+                                    {% else %}bg-success{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {% widthratio faculty.assigned_count 20 100 %}%;"
+                                    title="{{ faculty.assigned_count }} students">
+                                    {{ faculty.assigned_count }}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2">No faculty found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchFaculty');
+    const filterDept = document.getElementById('filterDept');
+    const rows = document.querySelectorAll('.faculty-row');
+    const resultCount = document.getElementById('resultCount');
+    
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const deptFilter = filterDept.value.toLowerCase();
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const name = row.cells[1].textContent.toLowerCase();
+            const dept = row.querySelector('.dept-cell').textContent.toLowerCase();
+            
+            const matchesSearch = name.includes(searchTerm) || dept.includes(searchTerm);
+            const matchesDept = !deptFilter || dept.includes(deptFilter);
+            
+            if (matchesSearch && matchesDept) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        resultCount.textContent = `Showing ${visibleCount} of {{ faculty_list|length }} faculty`;
+    }
+    
+    searchInput.addEventListener('input', filterTable);
+    filterDept.addEventListener('change', filterTable);
+});
+</script>
+
+<style>
+    .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    .progress-bar {
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,49 @@
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+*.sqlite3
+
+# Media files (user uploads)
+media/
+
+# Static files (collected)
+staticfiles/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# Pytest
+.pytest_cache/
+
+# Migrations (optional - uncomment if you want to exclude)
+# */migrations/*.py
+# !*/migrations/__init__.py

@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block title %}Submit Weekly Progress{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-upload"></i> Submit Weekly Progress - {{ application.company_name }}
+            </div>
+            <div class="card-body">
+                
+                <!-- Info Alert -->
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Note:</strong> File upload is <strong>MANDATORY</strong> for each week's submission.
+                    The submit button will only be enabled after you select a file.
+                </div>
+
+                <!-- Already Submitted Weeks -->
+                {% if submitted_weeks %}
+                <div class="alert alert-secondary">
+                    <i class="bi bi-check-circle"></i>
+                    <strong>Submitted Weeks:</strong> 
+                    {% for week in submitted_weeks %}
+                    <span class="badge bg-success me-1">Week {{ week }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" id="weeklyLogForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-calendar-week"></i> Week Number <span class="text-danger">*</span>
+                        </label>
+                        {{ form.week_number }}
+                        <small class="text-muted">Enter the week number (1, 2, 3, etc.)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-file-earmark-arrow-up"></i> Upload Work File <span class="text-danger">* REQUIRED</span>
+                        </label>
+                        {{ form.submission_file }}
+                        <small class="text-muted d-block mt-1">
+                            Supported: PDF, Images (JPG/PNG), Documents (DOC/DOCX), Videos (MP4/AVI/MOV)
+                        </small>
+                        <div id="file-status" class="mt-2"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-chat-left-text"></i> Description / Comments (Optional)
+                        </label>
+                        {{ form.description }}
+                        <small class="text-muted">Optionally describe your work this week</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                            <i class="bi bi-cloud-upload"></i> Submit Weekly Progress
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Previous Submissions -->
+        {% if existing_logs %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> Your Previous Submissions
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>File</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in existing_logs %}
+                            <tr>
+                                <td><strong>Week {{ log.week_number }}</strong></td>
+                                <td>
+                                    {% if log.submission_file %}
+                                    <a href="{{ log.submission_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-file-earmark"></i> {{ log.submission_file_name|default:"View" }}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ log.submission_date|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if log.review_status == 'reviewed' %}
+                                    <span class="badge bg-success">Reviewed</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.faculty_feedback %}
+                                    <span class="text-success">{{ log.faculty_feedback|truncatewords:8 }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Disable submit button until file is selected
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('submission-file-input') || document.querySelector('input[type="file"]');
+    const submitBtn = document.getElementById('submitBtn');
+    const fileStatus = document.getElementById('file-status');
+    
+    if (fileInput && submitBtn) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                const file = this.files[0];
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-secondary');
+                submitBtn.classList.add('btn-primary');
+                
+                fileStatus.innerHTML = `
+                    <div class="alert alert-success py-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <strong>File selected:</strong> ${file.name} (${sizeMB} MB)
+                    </div>
+                `;
+            } else {
+                submitBtn.disabled = true;
+                fileStatus.innerHTML = '';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="page-header">
+            <h1><i class="bi bi-shield-check me-2"></i>Admin Dashboard</h1>
+            <p>Manage and monitor all internship activities</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card" style="animation-delay: 0.1s;">
+                    <h6><i class="bi bi-people"></i> Total Students</h6>
+                    <h3>{{ total_students }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="animation-delay: 0.2s;">
+                    <h6><i class="bi bi-file-text"></i> Total Applications</h6>
+                    <h3>{{ total_applications }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="animation-delay: 0.3s;">
+                    <h6><i class="bi bi-check-circle"></i> Approved</h6>
+                    <h3>{{ approved_applications }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="animation-delay: 0.4s;">
+                    <h6><i class="bi bi-trophy"></i> Completed</h6>
+                    <h3>{{ total_completions }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="bi bi-lightning"></i> Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a href="{% url 'analytics' %}" class="btn btn-primary w-100 mb-2 btn-hover-grow">
+                            <i class="bi bi-graph-up"></i> View Analytics
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'download_pdf' %}" class="btn btn-danger w-100 mb-2 btn-hover-grow">
+                            <i class="bi bi-file-pdf"></i> Download PDF Report
+                        </a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'download_excel' %}" class="btn btn-success w-100 mb-2 btn-hover-grow">
+                            <i class="bi bi-file-excel"></i> Download Excel Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress by Department -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-building"></i> Progress by Department
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Department</th>
+                                <th>Students</th>
+                                <th>Applications</th>
+                                <th>Submissions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dept in dept_progress %}
+                            <tr>
+                                <td><strong>{{ dept.name }}</strong></td>
+                                <td><span class="badge bg-info">{{ dept.students }}</span></td>
+                                <td><span class="badge bg-primary">{{ dept.applications }}</span></td>
+                                <td><span class="badge bg-success">{{ dept.submissions }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Faculty Load -->
+        <div class="card mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-person-badge"></i> Faculty Assignment Load (Top 10)</span>
+                <a href="{% url 'all_faculty' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-list-ul me-1"></i> View All Faculty
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Faculty Name</th>
+                                <th>Department</th>
+                                <th>Assigned Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for faculty in faculty_load %}
+                            <tr>
+                                <td><strong>{{ faculty.full_name }}</strong></td>
+                                <td>{{ faculty.get_department_display }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ faculty.assigned_count }}</span>
+                                    <div class="progress mt-1" style="height: 8px; width: 150px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {% widthratio faculty.assigned_count 50 100 %}%;">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No faculty data</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Overview -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> System Overview
+            </div>
+            <div class="card-body">
+                <p class="lead">Welcome to SmartIntern Admin Dashboard</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-check-circle text-success"></i> Features</h6>
+                        <ul>
+                            <li>Monitor all internship applications</li>
+                            <li>Track weekly progress submissions</li>
+                            <li>View progress by department, faculty, or student</li>
+                            <li>Generate PDF & Excel reports</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-shield-check text-primary"></i> Access Control</h6>
+                        <ul>
+                            <li>Students see only their own data</li>
+                            <li>Faculty see only assigned students</li>
+                            <li>Department-wise faculty-student mapping</li>
+                            <li>Strict role-based permissions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

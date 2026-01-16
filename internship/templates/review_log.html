@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Review Submission - Week {{ log.week_number }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pencil-square"></i> Review Weekly Submission
+            </div>
+            <div class="card-body">
+                
+                <!-- Student Details -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="bi bi-person"></i> Student Details</h5>
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr>
+                                        <td><strong>Name:</strong></td>
+                                        <td>{{ log.student.full_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Register No:</strong></td>
+                                        <td>{{ log.student.register_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Department:</strong></td>
+                                        <td>{{ log.student.get_department_display }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="bi bi-calendar-week"></i> Submission Details</h5>
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr>
+                                        <td><strong>Week:</strong></td>
+                                        <td><span class="badge bg-primary fs-6">Week {{ log.week_number }}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Company:</strong></td>
+                                        <td>{{ log.application.company_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Submitted:</strong></td>
+                                        <td>{{ log.submission_date|date:"M d, Y H:i" }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Preview Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-file-earmark"></i> Uploaded File
+                    </div>
+                    <div class="card-body">
+                        {% if log.submission_file %}
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <!-- File Preview -->
+                                    {% if log.submission_file_type %}
+                                        {% if 'image' in log.submission_file_type %}
+                                        <div class="text-center mb-3">
+                                            <img src="{{ log.submission_file.url }}" class="img-fluid rounded shadow" style="max-height: 400px;" alt="Submission Image">
+                                        </div>
+                                        {% elif 'pdf' in log.submission_file_type %}
+                                        <div class="ratio ratio-16x9 mb-3">
+                                            <iframe src="{{ log.submission_file.url }}" frameborder="0" allowfullscreen></iframe>
+                                        </div>
+                                        {% elif 'video' in log.submission_file_type %}
+                                        <div class="text-center mb-3">
+                                            <video controls class="img-fluid rounded shadow" style="max-height: 400px;">
+                                                <source src="{{ log.submission_file.url }}" type="{{ log.submission_file_type }}">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-file-earmark-text"></i> 
+                                            Document file: <strong>{{ log.submission_file_name }}</strong>
+                                        </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-file-earmark"></i> 
+                                            File: <strong>{{ log.submission_file.name }}</strong>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ log.submission_file.url }}" target="_blank" class="btn btn-outline-primary btn-lg">
+                                            <i class="bi bi-eye"></i> View Full Size
+                                        </a>
+                                        <a href="{{ log.submission_file.url }}" download class="btn btn-primary btn-lg">
+                                            <i class="bi bi-download"></i> Download File
+                                        </a>
+                                    </div>
+                                    {% if log.submission_file_name %}
+                                    <p class="mt-3 text-muted small">
+                                        <strong>Filename:</strong> {{ log.submission_file_name }}<br>
+                                        {% if log.submission_file_type %}
+                                        <strong>Type:</strong> {{ log.submission_file_type }}
+                                        {% endif %}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> No file uploaded for this submission.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Student's Description -->
+                {% if log.description %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-chat-left-text"></i> Student's Description
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">{{ log.description }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Review Form -->
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-pencil"></i> Your Feedback
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-chat-quote"></i> Feedback for Student <span class="text-danger">*</span>
+                                </label>
+                                {{ form.faculty_feedback }}
+                                <small class="text-muted">
+                                    This feedback will be visible to the student on their dashboard.
+                                </small>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle"></i> Mark as Reviewed & Submit Feedback
+                                </button>
+                                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

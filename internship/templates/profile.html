@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - SmartIntern{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-person-circle me-2"></i>My Profile</h1>
+    <p>View and manage your account details</p>
+</div>
+
+<div class="row">
+    <!-- Profile Card -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center py-4">
+                <div class="profile-avatar mb-3">
+                    <i class="bi bi-person-circle" style="font-size: 5rem; color: var(--oxford-blue);"></i>
+                </div>
+                <h4 class="mb-1">{{ profile.full_name }}</h4>
+                <p class="text-muted mb-2">
+                    {% if profile.role == 'student' %}
+                    {{ profile.register_number }}
+                    {% else %}
+                    {{ profile.employee_id }}
+                    {% endif %}
+                </p>
+                <span class="badge {% if profile.role == 'student' %}bg-success{% elif profile.role == 'faculty' %}bg-primary{% else %}bg-danger{% endif %}" style="font-size: 0.875rem;">
+                    {{ profile.get_role_display|title }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Account Information
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Full Name</label>
+                        <p class="fw-medium">{{ profile.full_name }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Department</label>
+                        <p class="fw-medium">{{ profile.get_department_display }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Role</label>
+                        <p class="fw-medium">{{ profile.get_role_display|title }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Email</label>
+                        <p class="fw-medium">{{ profile.email_id|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Mobile Number</label>
+                        <p class="fw-medium">{{ profile.mobile_number|default:"-" }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        {% if profile.role == 'student' %}
+                        <label class="form-label text-muted mb-1">Year of Study</label>
+                        <p class="fw-medium">{{ profile.get_year_of_study_display|default:"-" }}</p>
+                        {% else %}
+                        <label class="form-label text-muted mb-1">Employee ID</label>
+                        <p class="fw-medium">{{ profile.employee_id|default:"-" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if profile.role == 'student' %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Register Number</label>
+                        <p class="fw-medium">{{ profile.register_number }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted mb-1">Username</label>
+                        <p class="fw-medium">{{ profile.user.username }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-bar-chart me-2"></i>Activity Summary
+            </div>
+            <div class="card-body">
+                {% if profile.role == 'student' %}
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h3>{{ total_applications|default:0 }}</h3>
+                            <p>Total Applications</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card primary">
+                            <h3>{{ approved_applications|default:0 }}</h3>
+                            <p>Approved</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h3>{{ total_weeks|default:0 }}</h3>
+                            <p>Weeks Submitted</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card accent">
+                            <h3>{{ reviewed_weeks|default:0 }}</h3>
+                            <p>Weeks Reviewed</p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if assigned_faculty %}
+                <div class="mt-4">
+                    <h6 class="text-muted mb-3"><i class="bi bi-person-badge me-2"></i>Assigned Faculty</h6>
+                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <i class="bi bi-person-circle me-3" style="font-size: 2.5rem; color: var(--oxford-blue);"></i>
+                        <div>
+                            <h6 class="mb-0">{{ assigned_faculty.full_name }}</h6>
+                            <small class="text-muted">{{ assigned_faculty.get_department_display }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% elif profile.role == 'faculty' %}
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="stat-card primary">
+                            <h3>{{ assigned_students|default:0 }}</h3>
+                            <p>Assigned Students</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h3>{{ pending_reviews|default:0 }}</h3>
+                            <p>Pending Reviews</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card accent">
+                            <h3>{{ completed_reviews|default:0 }}</h3>
+                            <p>Completed Reviews</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gray-100);
+        border-radius: 50%;
+    }
+    
+    .fw-medium {
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

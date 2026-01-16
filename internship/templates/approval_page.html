@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Review Application{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-eye"></i> Review Internship Application
+            </div>
+            <div class="card-body">
+                <h5>Student Details</h5>
+                <table class="table">
+                    <tr>
+                        <th>Name:</th>
+                        <td>{{ application.student.full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Register No:</th>
+                        <td>{{ application.student.register_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Department:</th>
+                        <td><span class="badge bg-secondary">{{ application.student.get_department_display }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Year:</th>
+                        <td>{{ application.student.get_year_of_study_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ application.student.email_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Mobile:</th>
+                        <td>{{ application.student.mobile_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Assigned Faculty:</th>
+                        <td>
+                            {% if application.assigned_faculty %}
+                            <span class="badge bg-info"><i class="bi bi-person-check"></i> {{ application.assigned_faculty.full_name }}</span>
+                            {% else %}
+                            <span class="text-muted">Not Assigned</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Current Status:</th>
+                        <td>
+                            {% if application.application_status == 'approved' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Approved</span>
+                            {% elif 'rejected' in application.application_status %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> {{ application.get_application_status_display }}</span>
+                            {% elif application.application_status == 'pending_company' %}
+                            <span class="badge bg-warning"><i class="bi bi-building"></i> Awaiting Company</span>
+                            {% elif application.application_status == 'pending_faculty' %}
+                            <span class="badge bg-info pulse-badge"><i class="bi bi-person-badge"></i> Pending Your Review</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ application.get_application_status_display }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+                <h5 class="mt-4">Internship Details</h5>
+                <table class="table">
+                    <tr>
+                        <th>Company:</th>
+                        <td>{{ application.company_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Domain:</th>
+                        <td>{{ application.internship_domain }}</td>
+                    </tr>
+                    <tr>
+                        <th>Mode:</th>
+                        <td>{{ application.get_internship_mode_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Duration:</th>
+                        <td>{{ application.start_date }} to {{ application.end_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Offer Letter:</th>
+                        <td>
+                            {% if application.offer_letter_file or application.offer_letter_data %}
+                                <a href="{% url 'serve_file' 'application' application.application_id 'offer_letter_file' %}" target="_blank" class="btn btn-sm btn-info">View</a>
+                            {% else %}
+                                <span class="text-muted">No file uploaded</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+                <h5 class="mt-4">Faculty Review</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Decision *</strong></label>
+                        <div class="mt-2">
+                            {% for radio in form.status %}
+                            <div class="form-check mb-2">
+                                {{ radio.tag }}
+                                <label class="form-check-label ms-2" for="{{ radio.id_for_label }}">
+                                    {{ radio.choice_label }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.remarks.label }} *</label>
+                        {{ form.remarks }}
+                        <small class="form-text text-muted">Your feedback will be shared with the student</small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-hover-grow">
+                            <i class="bi bi-check-circle"></i> Submit Review
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
