@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Application Details{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Internship Application Details</h2>
+    <table class="table table-bordered mt-3">
+        <tr><th>Student</th><td>{{ application.student.full_name }}</td></tr>
+        <tr><th>Register No</th><td>{{ application.student.register_number }}</td></tr>
+        <tr><th>Department</th><td>{{ application.student.get_department_display }}</td></tr>
+        <tr><th>Company</th><td>{{ application.company_name }}</td></tr>
+        <tr><th>Domain</th><td>{{ application.internship_domain }}</td></tr>
+        <tr><th>Mode</th><td>{{ application.get_internship_mode_display }}</td></tr>
+        <tr><th>Duration</th><td>{{ application.start_date|date:'M d, Y' }} - {{ application.end_date|date:'M d, Y' }}</td></tr>
+        <tr><th>Status</th><td>{{ application.get_application_status_display }}</td></tr>
+        <tr><th>Faculty Remarks</th><td>{{ application.faculty_remarks|default:'-' }}</td></tr>
+        <tr>
+            <th>Offer Letter</th>
+            <td>
+                {% if application.offer_letter_data or application.offer_letter_file %}
+                    <a href="{% url 'serve_file' 'application' application.application_id 'offer_letter_file' %}" target="_blank">Download Offer Letter</a>
+                {% else %}
+                    Not uploaded
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>NOC File</th>
+            <td>
+                {% if application.noc_file_data %}
+                    <a href="{% url 'serve_file' 'application' application.application_id 'noc_file' %}" target="_blank">Download NOC</a>
+                {% else %}
+                    Not uploaded
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+{% endblock %}

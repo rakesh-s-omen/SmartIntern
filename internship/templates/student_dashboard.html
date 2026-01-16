@@ -51,6 +51,7 @@
                         <th>Duration</th>
                         <th>Faculty Assigned</th>
                         <th>Status</th>
+                        <th>Faculty Feedback</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -78,6 +79,13 @@
                             <span class="badge bg-info"><i class="bi bi-person-badge"></i> Faculty Review</span>
                             {% else %}
                             <span class="badge bg-secondary"><i class="bi bi-hourglass-split"></i> {{ app.get_application_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.faculty_remarks %}
+                                <span class="text-success"><i class="bi bi-chat-quote me-1"></i>{{ app.faculty_remarks }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
                             {% endif %}
                         </td>
                         <td>

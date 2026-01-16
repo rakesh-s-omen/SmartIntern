@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}All Students - SmartIntern{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-people me-2"></i>All Students</h1>
+    <p>Complete list of students with their internship status</p>
+</div>
+<div class="mb-3">
+    <input type="text" id="searchStudent" class="form-control" placeholder="Search by name, department, or email...">
+</div>
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-table me-2"></i>Student List
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="studentsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Email</th>
+                        <th>Applications</th>
+                        <th>Approved</th>
+                        <th>Completed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in student_list %}
+                    <tr class="student-row" data-profile-url="{% url 'admin_user_profile' student.user.id %}">
+                        <td><a href="{% url 'admin_user_profile' student.user.id %}">{{ student.full_name }}</a></td>
+                        <td>{{ student.get_department_display }}</td>
+                        <td>{{ student.email_id }}</td>
+                        <td>{{ student.app_count }}</td>
+                        <td>{{ student.approved_count }}</td>
+                        <td>{{ student.completed_count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No students found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchStudent');
+    const rows = document.querySelectorAll('.student-row');
+    searchInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    });
+    // Row click navigation
+    rows.forEach(row => {
+        row.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'A') {
+                window.location = row.getAttribute('data-profile-url');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

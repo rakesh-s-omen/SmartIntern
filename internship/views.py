@@ -4,6 +4,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Count, Q
+
+@login_required
+def application_details(request, application_id):
+    """Show details of an internship application, including feedback and files."""
+    application = get_object_or_404(InternshipApplication, application_id=application_id)
+    # Only allow faculty assigned to this application, the student, or admin to view
+    user_profile = request.user.profile
+    if not (
+        (user_profile.role == 'faculty' and application.assigned_faculty == user_profile)
+        or (user_profile.role == 'student' and application.student == user_profile)
+        or user_profile.role == 'admin'
+    ):
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+    return render(request, 'application_details.html', {'application': application})
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
@@ -291,33 +306,35 @@ def dashboard(request):
     
     elif profile.role == 'faculty':
         # Applications assigned to this faculty ONLY (strict access control)
+        # Show all applications assigned to this faculty (pending and approved)
         my_assigned_applications = InternshipApplication.objects.filter(
-            assigned_faculty=profile
+            assigned_faculty=profile,
+            application_status__in=['pending_faculty', 'pending_company', 'approved']
         ).select_related('student').distinct()
-        
+
         # Pending submissions (from assigned students only)
         pending_logs = WeeklyLog.objects.filter(
             application__assigned_faculty=profile,
             review_status='pending'
         ).select_related('student', 'application').order_by('-submission_date')
-        
+
         # Reviewed submissions (from assigned students only)
         reviewed_logs = WeeklyLog.objects.filter(
             application__assigned_faculty=profile,
             review_status='reviewed'
         ).select_related('student', 'application').order_by('-review_date')[:20]
-        
+
         # Pending applications for approval
         pending_applications = InternshipApplication.objects.filter(
             assigned_faculty=profile,
             application_status__in=['pending_faculty', 'pending_company']
         ).select_related('student')
-        
+
         pending_completions = InternshipCompletion.objects.filter(
             application__assigned_faculty=profile,
             faculty_verification_status='pending'
         ).select_related('student', 'application')
-        
+
         # Get assigned students list with progress
         assigned_students_progress = []
         for app in my_assigned_applications:
@@ -325,14 +342,14 @@ def dashboard(request):
             submitted = logs.count()
             reviewed = logs.filter(review_status='reviewed').count()
             pending = logs.filter(review_status='pending').count()
-            
+
             # Calculate expected weeks
             if app.start_date and app.end_date:
                 total_days = (app.end_date - app.start_date).days
                 expected = max(1, total_days // 7)
             else:
                 expected = 12
-            
+
             assigned_students_progress.append({
                 'student': app.student,
                 'application': app,
@@ -342,7 +359,7 @@ def dashboard(request):
                 'expected_weeks': expected,
                 'progress_pct': int((submitted / expected) * 100) if expected > 0 else 0
             })
-        
+
         context = {
             'profile': profile,
             'pending_applications': pending_applications,
@@ -393,6 +410,41 @@ def dashboard(request):
 
 
 @login_required
+@role_required(['faculty'])
+def approve_application(request, application_id):
+    """Faculty approves or rejects internship applications, with feedback."""
+    application = get_object_or_404(
+        InternshipApplication, 
+        application_id=application_id,
+        assigned_faculty=request.user.profile
+    )
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        faculty_remarks = request.POST.get('faculty_remarks', '').strip()
+        if not faculty_remarks:
+            messages.error(request, 'Feedback/remarks are required.')
+            return redirect('dashboard')
+
+        application.faculty_remarks = faculty_remarks
+        if action == 'approve':
+            application.application_status = 'approved'
+            application.approved_date = timezone.now()
+            application.save()
+            messages.success(request, f'Application approved for {application.student.full_name}!')
+        elif action == 'reject':
+            application.application_status = 'rejected_faculty'
+            application.save()
+            messages.error(request, f'Application rejected for {application.student.full_name}.')
+        else:
+            messages.error(request, 'Invalid action.')
+        return redirect('dashboard')
+
+    # For GET requests, redirect to dashboard
+    return redirect('dashboard')
+
+
+@login_required
 def all_faculty_view(request):
     """View all faculty with their assigned students - Admin only"""
     profile = request.user.profile
@@ -424,6 +476,27 @@ def all_faculty_view(request):
         'total_pending_reviews': total_pending_reviews,
     }
     return render(request, 'all_faculty.html', context)
+
+
+@login_required
+def all_students_view(request):
+    """View all students with their internship status - Admin only"""
+    profile = request.user.profile
+    if profile.role != 'admin':
+        messages.error(request, 'Access denied. Admin only.')
+        return redirect('dashboard')
+
+    student_list = UserProfile.objects.filter(role='student').annotate(
+        app_count=Count('internship_applications'),
+        approved_count=Count('internship_applications', filter=Q(internship_applications__application_status='approved')),
+        completed_count=Count('internship_applications', filter=Q(internship_applications__completion__completion_status=True))
+    ).order_by('full_name')
+
+    context = {
+        'profile': profile,
+        'student_list': student_list,
+    }
+    return render(request, 'all_students.html', context)
 
 
 @login_required
@@ -492,7 +565,17 @@ def apply_internship(request):
         if form.is_valid():
             application = form.save(commit=False)
             application.student = request.user.profile
-            
+
+            # Store uploaded offer letter in DB
+            offer_file = request.FILES.get('offer_letter_file')
+            if offer_file:
+                application.offer_letter_data = offer_file.read()
+                application.offer_letter_name = offer_file.name
+            noc_file = request.FILES.get('noc_file')
+            if noc_file:
+                application.noc_file_data = noc_file.read()
+                application.noc_file_name = noc_file.name
+
             # Auto-assign a faculty from the same department
             from django.db.models import Count
             available_faculty = UserProfile.objects.filter(
@@ -501,13 +584,13 @@ def apply_internship(request):
             ).annotate(
                 assigned_count=Count('assigned_applications')
             ).order_by('assigned_count').first()
-            
+
             if available_faculty:
                 application.assigned_faculty = available_faculty
                 application.application_status = 'pending_faculty'
             else:
                 application.application_status = 'pending_faculty'
-            
+
             application.save()
             messages.success(request, f'Application submitted successfully! Assigned to {available_faculty.full_name if available_faculty else "faculty review"}')
             return redirect('dashboard')
@@ -613,6 +696,32 @@ def review_application(request, application_id):
         form = FacultyReviewForm()
     
     return render(request, 'approval_page.html', {'form': form, 'application': application})
+
+
+@role_required(['faculty'])
+def approve_application(request, application_id):
+    # Faculty can only approve applications assigned to them
+    application = get_object_or_404(
+        InternshipApplication,
+        application_id=application_id,
+        assigned_faculty=request.user.profile
+    )
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            application.application_status = 'approved'
+            application.faculty_remarks = 'Approved from faculty dashboard'
+            messages.success(request, f'Application for {application.student.full_name} has been approved!')
+        elif action == 'reject':
+            application.application_status = 'rejected'
+            application.faculty_remarks = 'Rejected from faculty dashboard'
+            messages.error(request, f'Application for {application.student.full_name} has been rejected.')
+        
+        application.approval_date = datetime.now().date()
+        application.save()
+    
+    return redirect('dashboard')
 
 
 @role_required(['faculty'])
@@ -953,42 +1062,57 @@ def progress_monitoring_dashboard(request):
 
 @login_required
 def serve_file_from_db(request, model_name, file_id, field_name):
-    """Serve files stored in database"""
+    """Serve files stored in database (for InternshipApplication, use *_data fields)."""
     from django.http import HttpResponse
     import mimetypes
-    
+
     models_map = {
         'application': InternshipApplication,
         'completion': InternshipCompletion,
         'proof': ProgressProof,
     }
-    
+
     model = models_map.get(model_name)
     if not model:
         return HttpResponse('Invalid model', status=400)
-    
+
     try:
         obj = model.objects.get(pk=file_id)
-        
+
         # Check permissions
         if hasattr(obj, 'student'):
             if request.user.profile.role == 'student' and obj.student != request.user.profile:
                 return HttpResponse('Access denied', status=403)
             elif request.user.profile.role == 'faculty' and obj.student.department != request.user.profile.department:
                 return HttpResponse('Access denied', status=403)
-        
-        # Get file data and name
-        data_field = f"{field_name}_data"
-        name_field = f"{field_name}_name"
-        type_field = f"{field_name}_type"
-        
-        file_data = getattr(obj, data_field, None)
-        file_name = getattr(obj, name_field, 'file')
-        file_type = getattr(obj, type_field, None) if hasattr(obj, type_field) else None
-        
+
+        # For InternshipApplication, use *_data and *_name fields
+        if model_name == 'application' and field_name in ['offer_letter_file', 'noc_file']:
+            data_field = f"{field_name.replace('_file','')}_data"
+            name_field = f"{field_name.replace('_file','')}_name"
+            file_data = getattr(obj, data_field, None)
+            file_name = getattr(obj, name_field, None)
+            file_type = None
+            # Fallback: If no DB data, try reading from disk (for new uploads not yet migrated)
+            if not file_data and getattr(obj, field_name):
+                try:
+                    with getattr(obj, field_name).open('rb') as f:
+                        file_data = f.read()
+                        file_name = getattr(obj, field_name).name.split('/')[-1]
+                except Exception:
+                    file_data = None
+                    file_name = None
+        else:
+            data_field = f"{field_name}_data"
+            name_field = f"{field_name}_name"
+            type_field = f"{field_name}_type"
+            file_data = getattr(obj, data_field, None)
+            file_name = getattr(obj, name_field, 'file')
+            file_type = getattr(obj, type_field, None) if hasattr(obj, type_field) else None
+
         if not file_data:
             return HttpResponse('File not found', status=404)
-        
+
         # Determine content type
         if file_type:
             content_type = file_type
@@ -996,11 +1120,25 @@ def serve_file_from_db(request, model_name, file_id, field_name):
             content_type, _ = mimetypes.guess_type(file_name)
             if not content_type:
                 content_type = 'application/octet-stream'
-        
+
         response = HttpResponse(file_data, content_type=content_type)
         response['Content-Disposition'] = f'inline; filename="{file_name}"'
         return response
-        
+
     except model.DoesNotExist:
         return HttpResponse('File not found', status=404)
+
+
+@login_required
+def admin_user_profile(request, user_id):
+    """Admin can view any user's profile by user_id"""
+    profile = request.user.profile
+    if profile.role != 'admin':
+        messages.error(request, 'Access denied. Admin only.')
+        return redirect('dashboard')
+    from django.contrib.auth.models import User
+    user = get_object_or_404(User, id=user_id)
+    user_profile = user.profile
+    context = {'profile': user_profile, 'admin_view': True}
+    return render(request, 'profile.html', context)
 

@@ -214,8 +214,22 @@
                                 <td>{{ app.internship_domain }}</td>
                                 <td>{{ app.start_date|date:"M d" }} - {{ app.end_date|date:"M d, Y" }}</td>
                                 <td>
-                                    <a href="{% url 'review_application' app.application_id %}" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-eye"></i> Review
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <form method="post" action="{% url 'approve_application' app.application_id %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <div class="mb-1">
+                                                <textarea name="faculty_remarks" class="form-control" rows="2" placeholder="Feedback/Remarks (required)" required></textarea>
+                                            </div>
+                                            <button type="submit" name="action" value="approve" class="btn btn-sm btn-success mt-1" onclick="return confirm('Are you sure you want to approve this application?')">
+                                                <i class="bi bi-check-circle"></i> Approve
+                                            </button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Are you sure you want to reject this application?')">
+                                                <i class="bi bi-x-circle"></i> Reject
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <a href="{% url 'review_application' app.application_id %}" class="btn btn-sm btn-outline-primary ms-1">
+                                        <i class="bi bi-eye"></i> View Details
                                     </a>
                                 </td>
                             </tr>
@@ -226,6 +240,53 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Approved Students/Applications -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-check2-circle"></i> Approved Students
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Register No</th>
+                                    <th>Department</th>
+                                    <th>Company</th>
+                                    <th>Domain</th>
+                                    <th>Duration</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in my_assigned_applications %}
+                                    {% if app.application_status == 'approved' %}
+                                    <tr>
+                                        <td><strong>{{ app.student.full_name }}</strong></td>
+                                        <td>{{ app.student.register_number }}</td>
+                                        <td><span class="badge bg-secondary">{{ app.student.get_department_display }}</span></td>
+                                        <td>{{ app.company_name }}</td>
+                                        <td>{{ app.internship_domain }}</td>
+                                        <td>{{ app.start_date|date:"M d" }} - {{ app.end_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'application_details' app.application_id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No approved students</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
